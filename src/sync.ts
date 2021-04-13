@@ -1,5 +1,3 @@
-// tslint:disable: no-submodule-imports
-// tslint:disable: no-unsafe-any
 import { StoreSync as AbstractStore } from "@konceiver/kv-file";
 import parse from "csv-parse/lib/sync";
 import stringify from "csv-stringify/lib/sync";
@@ -10,13 +8,16 @@ export class StoreSync<K, T> extends AbstractStore<K, T> {
 		return new StoreSync<K, T>(new Map<K, T>(), uri);
 	}
 
-	// @ts-ignore
-	protected dump(rows: Record<K, T>): void {
-		writeFileSync(this.uri, stringify(Object.entries(rows)));
+	protected dump(): void {
+		writeFileSync(this.uri, stringify(Object.entries(this.all())));
 	}
 
 	protected load(): void {
-		// @ts-ignore
-		this.putMany(Object.entries(parse(readFileSync(this.uri, "utf8"))));
+		try {
+			// @ts-ignore
+			this.putMany(Object.entries(parse(readFileSync(this.uri, "utf8"))));
+		} catch {
+			//
+		}
 	}
 }
